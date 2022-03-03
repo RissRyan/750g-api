@@ -4,14 +4,14 @@ type ingredients = {
 	number:number
 }
 
-enum difficulty {
+export enum DIFFICULTY {
 	VERY_EASY,
 	EASY,
 	MEDIUM,
 	HARD
 }
 
-enum price {
+export enum PRICE {
 	CHEAP,
 	MEDIUM,
 	EXPENSIVE
@@ -24,9 +24,9 @@ export interface Recipe {
 
 	ingredients:ingredients[];
 
-  difficulty:difficulty;
+  difficulty:DIFFICULTY;
 
-  budget:price;
+  budget:PRICE;
 
   steps:string[];
 

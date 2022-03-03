@@ -1,5 +1,28 @@
-import { Recipe } from './@types/recipe'
+import { Recipe } from './@types/recipe';
+import { SevenFiftyQuerryBuilder } from './750gQuerryBuilder';
+import {RecipesParser} from './components/recipes-parser';
+import fetch from 'node-fetch'
 
-export class SevenError extends Error{}
+export class SevenError extends Error{};
 
-const baseUrl:string = "https://750g.com"
+const baseUrl:string = "https://750g.com";
+let endpoint:string = `${baseUrl}/recherche/`;
+
+const recipePerPage = 10;
+
+export async function searchRecipies(q:string, opt?:number)
+:Promise<Recipe[]>{
+	const options = Object.assign(recipePerPage, opt);
+  const recipes: Partial<Recipe>[] = [];
+	
+
+  for (let i = 1; recipes.length < recipePerPage ; i++) {
+    let url = `${endpoint}?${q}`
+    url += `&page=${i + 1}`
+    const request = await fetch(url)
+    if (request.status !== 200) {console.log("res != 200"); break}
+    const htmlBody = await request.text()
+    recipes.push(...(await RecipesParser.parseSearchResults(htmlBody, baseUrl)))
+  }
+  return recipes.slice(0, recipePerPage) as Recipe[]
+}
