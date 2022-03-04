@@ -1,32 +1,34 @@
-type ingredients = {
+type Ingredients = { // to export ?
 	ingredients: string[],
 	units: string,
 	number:number
 }
 
 export enum DIFFICULTY {
-	VERY_EASY,
-	EASY,
-	MEDIUM,
-	HARD
+	VERY_EASY = "Très facile",
+	EASY = "Facile",
+	MEDIUM = "Moyer",
+	HARD = "Difficile"
 }
 
-export enum PRICE {
+/*export enum PRICE { //too hard to do, we have to look inside the recipe
 	CHEAP,
 	MEDIUM,
 	EXPENSIVE
-}
+}*/
 
 export interface Recipe {
 	name:string;
 	
 	url:string;
 
-	ingredients:ingredients[];
+	ingredients:Ingredients[];
 
   difficulty:DIFFICULTY;
 
-  budget:PRICE;
+  //budget:PRICE; 
+	//
+	//rating:number;
 
   steps:string[];
 
@@ -35,4 +37,12 @@ export interface Recipe {
 	prepTime:number;
 
 	cookTime:number;
+
+	totalTime:number;
+
+	numberServig:number;
+
+	author:string;
+
+	description:string;
 }

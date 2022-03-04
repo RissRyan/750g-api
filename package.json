@@ -1,12 +1,13 @@
 {
   "dependencies": {
     "node-fetch": "^3.2.0",
-    "node-html-parser": "^5.2.0"
+    "node-html-parser": "^5.2.0",
+    "tsc": "^2.0.4"
   },
-
- "scripts": {
+  "scripts": {
     "test": "node index.js",
-    "start": "tsc && node build/index.js",
+    "start": "/usr/bin/tsc && node build/index.js",
     "watch-and-run": "tsc -w & nodemon -q -w build build/index.js"
-  }
+  },
+	"type":"module"
 }

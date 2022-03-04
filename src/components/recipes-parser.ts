@@ -1,12 +1,12 @@
 // i have no idea how to do this, i yoinked it from the marmitton api 
 // Do i have to change my license to MIT now ? or GPL is still ok ? im confused now
 import { HTMLElement, parse } from 'node-html-parser'
-import { RecipeBuilder } from '../750gReciepeBuilder'
+import { RecipeBuilder } from './750gRecipeBuilder'
 import fetch from 'node-fetch'
 import { Recipe } from '../@types/recipe'
-import { DIFFICULTY, PRICE } from '../@types/recipe'
+import { DIFFICULTY } from '../@types/recipe'
 
-export class RecipesParser {
+export class RecipiesParser {
   /** ISO 8601 Regex. The only capture groups used for a recipe should be H and M */
   private static readonly ISO_8601_REGEX =
     /^P(?!$)(\d+(?:\.\d+)?Y)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?W)?(\d+(?:\.\d+)?D)?(T(?=\d)(\d+(?:\.\d+)?H)?(\d+(?:\.\d+)?M)?(\d+(?:\.\d+)?S)?)?$/
@@ -23,7 +23,6 @@ export class RecipesParser {
           const rb = new RecipeBuilder()
             .withName(this.selectText(e, 'h4'))
             // .withDescription(this.selectText(e, '.recipe-card__description'))
-            .withRate(Number(this.selectText(e, 'span')?.replace(/\/\s*5/, '')))
             .withUrl(url.toString())
           // Load the recipe page
           const dom = await (await fetch(url.toString())).text()
@@ -55,11 +54,7 @@ export class RecipesParser {
     if (recipe === undefined) return
 
     // Gather every raw attributes we can
-    rb.withIngredients(recipe?.recipeIngredient)
-      .withAuthor(recipe?.author)
-      .withSteps(
-        recipe?.recipeInstructions.map((ri: { '@type': string; text: string }) => ri?.text)
-      )
+    rb.withAuthor(recipe?.author)
       .withDescription(recipe?.description)
 
     // French attributes.
@@ -68,11 +63,9 @@ export class RecipesParser {
     // However this is the only related data in the object ?
     const rawBudget = keywordsArray[keywordsArray.length - 1]
     const rawDifficulty = keywordsArray[keywordsArray.length - 2]
-    rb.withDifficulty(this.parseDifficulty(rawDifficulty))
-      .withBudget(this.parseBudget(rawBudget))
-      .withTags(keywordsArray)
+    rb.withDifficulty(this.parseDifficulty(rawDifficulty));
 
-    // Time related attributes
+    // Time related attributes TODO
     rb.withPreparationTime(this.parseISO8601(recipe?.prepTime)).withTotalTime(
       this.parseISO8601(recipe?.totalTime)
     )
@@ -80,7 +73,7 @@ export class RecipesParser {
     // "Optional" attributes
     // Pure regex parsing isn't that consistent, better prepare for the worst
     const people = Number(recipe.recipeYield.match(/\d+/)[0])
-    rb.withPeople(people)
+    rb.withNumberServing(people)
 
     return rb.build()
   }
@@ -104,18 +97,18 @@ export class RecipesParser {
    * Converts french textual representation of a recipe budget to an enum
    * @param budget
    */
-  static parseBudget(budget: string): PRICE {
-    switch (budget.toLowerCase()) {
-      case 'Bon marché':
-        return PRICE.CHEAP
-      case 'Moyen': //idk havent found one yet
-        return PRICE.MEDIUM
-      case 'Plat de fête':
-        return PRICE.EXPENSIVE
-      default:
-        return PRICE.CHEAP
-    }
-  }
+  //static parseBudget(budget: string): PRICE {
+  //  switch (budget.toLowerCase()) {
+  //    case 'Bon marché':
+  //      return PRICE.CHEAP
+  //    case 'Moyen': //idk havent found one yet
+  //      return PRICE.MEDIUM
+  //    case 'Plat de fête':
+  //      return PRICE.EXPENSIVE
+  //    default:
+  //      return PRICE.CHEAP
+  //  }
+  //}
   /**
    * Converts french textual representation of a recipe difficulty to an enum
    * @param budget
@@ -135,8 +128,13 @@ export class RecipesParser {
     }
   }
 
-  private static selectText(root: HTMLElement, selector: string) {
-    return this.getCleanText(root.querySelector(selector))
+  private static selectText(root: HTMLElement|null, selector: string):string{
+
+		if(!root) return "";
+		let tmp:HTMLElement|null = root.querySelector(selector);
+		if(!tmp) return "";
+
+    return this.getCleanText(tmp);
   }
 
   private static getCleanText(e: HTMLElement) {
