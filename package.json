@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/node": "^17.0.21",
     "node-fetch": "^3.2.0",
     "node-html-parser": "^5.2.0",
     "tsc": "^2.0.4"
@@ -9,5 +10,5 @@
     "start": "/usr/bin/tsc && node build/index.js",
     "watch-and-run": "tsc -w & nodemon -q -w build build/index.js"
   },
-	"type":"module"
+  "type": "module"
 }

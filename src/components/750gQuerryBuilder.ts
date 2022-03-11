@@ -18,9 +18,9 @@ export class SevenFiftyQuerryBuilder {
 		return this
 	}
 
-	withDifficulty(q:DIFFICULTY):this{
+	withDifficulty(q:DIFFICULTY):this{ // too hard
 		this.queryString.append('difficulty%5B%5D', q);
-		return this
+		return this;
 	}
 
 
